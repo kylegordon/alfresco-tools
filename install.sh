@@ -87,8 +87,9 @@ jdk_version=default-jdk
 # Whether to remove the downloaded WAR package after downloading
 cleanup_war=1
 
+# FIXME
 # Whether to clean up the temp dir contents afterwards
-cleanup_after=1
+cleanup_after=0
 
 # Detect command-line options and their parameters
 p_opt=""
@@ -612,6 +613,7 @@ if [ "$alf_install_vti" == "1" ]; then
         rm vti-module.amp
       ;;
       *.zip)
+        echo "Downloading $ALF_VTI_MODULE_URL"
         dl_package "$ALF_VTI_MODULE_URL" vti-module.zip
         unzip -q vti-module.zip "*.amp"
 	echo "Unzip complete"
@@ -702,10 +704,10 @@ echo "TOMCAT6_SECURITY=no" >> $CATALINA_BASE/bin/setenv.sh
 #fi
 
 # Enable AJP Connector if it is commented out
-ln=`grep -n '\s*<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />\s*' $CATALINA_BASE/server.xml | cut -d ":" -f 1`
+ln=`grep -n '\s*<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />\s*' $CATALINA_BASE/conf/server.xml | cut -d ":" -f 1`
 lc="$( wc -l /etc/tomcat6/server.xml | cut -d " " -f 1 )"
-if [[ "`head -n $((ln-1)) $CATALINA_BASE/server.xml | tail -n 1`" == *\<\!--* ]]; then
-  if [[ "`head -n $((ln+1)) $CATALINA_BASE/server.xml | tail -n 1`" == *--\>* ]]; then
+if [[ "`head -n $((ln-1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *\<\!--* ]]; then
+  if [[ "`head -n $((ln+1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *--\>* ]]; then
     head -n $((ln-2)) $CATALINA_BASE/conf/server.xml > $CATALINA_BASE/conf/server.xml.head
     tail -n $((lc-ln-1)) $CATALINA_BASE/conf/server.xml > $CATALINA_BASE/conf/server.xml.tail
     tail -n $((lc-ln+1)) $CATALINA_BASE/conf/server.xml | head -n 1 > $CATALINA_BASE/conf/server.xml.this
