@@ -3,7 +3,8 @@
 # SLES Quick Start Script for Alfresco 3.4/4.0
 # Based on the Ubuntu EC2 Quick Start Script for Alfresco 3.4/4.0 from
 #
-# Author: Will Abson
+# Initial author: Will Abson
+# Further changes by: Kyle Gordon
 # 
 # This script will install a complete Alfresco system and all prerequisites on an Ubuntu Linux EC2 
 # image. The script has been tested on the official Maverick image available from Canonical - 
