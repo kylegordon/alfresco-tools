@@ -218,7 +218,7 @@ function dl_package {
   # Otherwise do a plain HTTP download
   if [ -z "`echo $1 | grep network.alfresco.com`" ]; then
     echo "Downloading '$1' via HTTP to '$2'"
-    curl --dump-header headers.txt $1 -o $2
+    curl -silent --dump-header headers.txt $1 -o $2
     httpstatus=`cat headers.txt | head -1| cut -d ' ' -f 2`
     if [ "$httpstatus" != "200" ]; then
       echo "Error: Got HTTP status $httpstatus"
