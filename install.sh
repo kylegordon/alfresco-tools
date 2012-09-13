@@ -32,9 +32,10 @@ alf_edition="enterprise"
 
 # Download URL for MySQL Connector/J
 # FIXME - Probably superfluous now
-CONNECTOR_DL_URL='http://mirrors.dedipower.com/www.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.18.tar.gz'
+#CONNECTOR_DL_URL='http://mirrors.dedipower.com/www.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.18.tar.gz'
 #CONNECTOR_DL_URL='http://mirrors.dedipower.com/www.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.10.tar.gz'
-SWFTOOLS_DL_URL='http://www.swftools.org/swftools-0.9.1.tar.gz'
+#SWFTOOLS_DL_URL='http://www.swftools.org/swftools-0.9.1.tar.gz'
+
 swftools_rpm="swftools-0.9.1-5.2.x86_64.rpm"
 imagemagick_rpm="ImageMagick-6.4.3.6-7.18.x86_64.rpm"
 libmagick_rpm="libMagick++1-6.4.3.6-7.18.x86_64.rpm"
@@ -690,9 +691,9 @@ fi
 # startup.sh calls catalina.sh, catalina.sh calls setenv *if it exists*
 # Let's make it exist!
 echo "Configuring Tomcat Catalina variables"
-echo "JAVA_HOME=$java_home" > $CATALINA_BASE/bin/setenv.sh
-echo "JAVA_OPTS"="-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote" >> $CATALINA_BASE/bin/setenv.sh
-echo "TOMCAT6_SECURITY=no" >> $CATALINA_BASE/bin/setenv.sh
+echo "JAVA_HOME=\"$java_home"\" > $CATALINA_BASE/bin/setenv.sh
+echo "JAVA_OPTS=\"-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\"" >> $CATALINA_BASE/bin/setenv.sh
+echo "TOMCAT6_SECURITY=\"no\"" >> $CATALINA_BASE/bin/setenv.sh
 #set_property /etc/default/tomcat6 "JAVA_HOME" "\"$java_home\""
 #set_property /etc/default/tomcat6 "JAVA_OPTS" "\"-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\""
 #set_property /etc/default/tomcat6 "TOMCAT6_SECURITY" "no"
@@ -705,7 +706,7 @@ echo "TOMCAT6_SECURITY=no" >> $CATALINA_BASE/bin/setenv.sh
 
 # Enable AJP Connector if it is commented out
 ln=`grep -n '\s*<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />\s*' $CATALINA_BASE/conf/server.xml | cut -d ":" -f 1`
-lc="$( wc -l /etc/tomcat6/server.xml | cut -d " " -f 1 )"
+lc="$( wc -l $CATALINA_BASE/conf/server.xml | cut -d " " -f 1 )"
 if [[ "`head -n $((ln-1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *\<\!--* ]]; then
   if [[ "`head -n $((ln+1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *--\>* ]]; then
     head -n $((ln-2)) $CATALINA_BASE/conf/server.xml > $CATALINA_BASE/conf/server.xml.head
