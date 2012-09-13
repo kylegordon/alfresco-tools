@@ -271,12 +271,6 @@ function install_amp {
   java -jar /opt/alfresco/bin/alfresco-mmt.jar install "$2" "$1"
 }
 
-#function apt_add_source {
-#  if [ -z "`grep "^$1" /etc/apt/sources.list`" ]; then
-#    echo "$1" >> /etc/apt/sources.list
-#  fi
-#}
-
 function set_property {
   if [ -f "$1" ]; then
     esckey=${2//\./\\.}
@@ -567,8 +561,8 @@ set_property "$f" "img.exe" "convert"
 set_property "$f" "swf.exe" `which pdf2swf`
 
 # Set Database properties
-set_property "$f"  "db.driver" "org.gjt.mm.mysql.Driver"
-set_property "$f"  "db.url" "jdbc:mysql://localhost:3306/alfresco"
+set_property "$f"  "db.driver" "org.postgresql.Driver"
+set_property "$f"  "db.url" "jdbc:postgresql://localhost:3306/alfresco"
 set_property "$f"  "db.username" "alfresco"
 set_property "$f"  "db.password" "alfresco"
 
