@@ -218,7 +218,7 @@ function dl_package {
   # Otherwise do a plain HTTP download
   if [ -z "`echo $1 | grep network.alfresco.com`" ]; then
     echo "Downloading '$1' via HTTP to '$2'"
-    curl -silent --dump-header headers.txt $1 -o $2
+    curl --dump-header headers.txt $1 -o $2
     httpstatus=`cat headers.txt | head -1| cut -d ' ' -f 2`
     if [ "$httpstatus" != "200" ]; then
       echo "Error: Got HTTP status $httpstatus"
@@ -418,7 +418,7 @@ chkconfig postgresql on
 # Switch to Postgresql user, and run psql whilst selecting the postgres database
 # Change the password for the default postgres user
 sudo -u postgres psql postgres << EOF
-ALTER USER Postgres WITH PASSWORD 'postgres';
+ALTER USER postgres WITH PASSWORD 'postgres';
 EOF
 
 # Create the Alfresco user, create the alfresco database, 
@@ -428,6 +428,12 @@ CREATE USER alfresco WITH PASSWORD 'alfresco';
 CREATE DATABASE alfresco OWNER alfresco ENCODING 'UTF8';
 GRANT ALL PRIVILEGES ON DATABASE alfresco TO alfresco;
 EOF
+
+# We do this at the end, as otherwise we'd need a password to log in to psql
+echo "Configuring PostgreSQL authentication"
+/etc/init.d/postgresql stop
+sed -i s/ident\ sameuser/md5/ /var/lib/pgsql/data/pg_hba.conf
+/etc/init.d/postgresql start
 
 
 # FIXME - We use the binary tomcat distribution
@@ -505,6 +511,8 @@ echo "Extracting Tomcat"
 tar -zxf $ALF_TEMP_DIR/$TOMCAT_TAR -C $ALF_TEMP_DIR/
 echo "Moving tomcat"
 mv $ALF_TEMP_DIR/$TOMCAT_VER/* $CATALINA_BASE/
+echo "Applying Alfresco tomcat overlay"
+cp -r $ALF_TEMP_DIR/web-server/* $CATALINA_BASE/
 
 # FIXME MMT is provided as part of the alfresco enterprise ZIP file
 # Install MMT
