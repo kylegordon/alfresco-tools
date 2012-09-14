@@ -509,7 +509,6 @@ mv $ALF_TEMP_DIR/$TOMCAT_VER/* $CATALINA_BASE/
 echo "Applying Alfresco tomcat overlay"
 cp -r $ALF_TEMP_DIR/web-server/* $CATALINA_BASE/
 
-# FIXME MMT is provided as part of the alfresco enterprise ZIP file
 # Install MMT
 install_mmt_tool
 
