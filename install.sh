@@ -256,6 +256,7 @@ function unpack_war {
 function pack_war {
   war_file="$1/$2"
   war_dir="$1"/`echo $2 | cut -d . -f 1`
+  echo "Packing $war_dir into $war_file"
   cd "$war_dir"
   chmod -R a+r .
   zip -uq "$war_file" "*"
@@ -288,26 +289,26 @@ function set_property {
 }
 
 ## FIXME Superfluous
-function build_swftools {
-  # swftools compilation - not required for karmic or lucid as v0.9.0 exists in the repository
-  wget "$SWFTOOLS_DL_URL"
-  swftools=`find . -name "swftools*" -type f`
-  if [ ! -z "$swftools" ]; then
-    tar xzf "$swftools"
-    swftoolsdir=`find . -name "swftools*" -type d`
-    if [ ! -z "$swftoolsdir" ]; then
-      cd "$swftoolsdir"
-      apt-get --yes install build-essential zlib1g-dev libfreetype6-dev libjpeg-dev libungif4-dev
-      ./configure && make
-      checkinstall --pkgname=swftools --pkgversion "4:0.9.1-1" --backup=no --deldoc=yes --fstrans=no --default
-      cd ..
-    fi
-    #rm -rf swftools-*
-  else
-    echo "Could not locate SWFTools download file"
-    exit 1
-  fi
-}
+#function build_swftools {
+#  # swftools compilation - not required for karmic or lucid as v0.9.0 exists in the repository
+#  wget "$SWFTOOLS_DL_URL"
+#  swftools=`find . -name "swftools*" -type f`
+#  if [ ! -z "$swftools" ]; then
+#    tar xzf "$swftools"
+#    swftoolsdir=`find . -name "swftools*" -type d`
+#    if [ ! -z "$swftoolsdir" ]; then
+#      cd "$swftoolsdir"
+#      apt-get --yes install build-essential zlib1g-dev libfreetype6-dev libjpeg-dev libungif4-dev
+#      ./configure && make
+#      checkinstall --pkgname=swftools --pkgversion "4:0.9.1-1" --backup=no --deldoc=yes --fstrans=no --default
+#      cd ..
+#    fi
+#    #rm -rf swftools-*
+#  else
+#    echo "Could not locate SWFTools download file"
+#    exit 1
+#  fi
+#}
 
 #function install_bootstrap_data {
 #  mkdir "$2"
@@ -397,10 +398,13 @@ dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/N
 
 # Install the IBM Java 1.6 from the system repository
 echo "Checking for Java 1.6.0"
-if [ ! -x '/usr/lib64/jvm/jre-1.6.0/bin/java' ]; then
-	zypper install -y java-1_6_0-ibm
+if [ ! -x '/usr/java/jre1.6.0_35/' ]; then
+        #zypper install -y java-1_6_0-ibm
+        zypper install -y $alf_base_url/jre-6u35-linux-amd64.rpm
 fi
-java_home="/usr/lib64/jvm/jre-1.6.0"
+#java_home="/usr/lib64/jvm/jre-1.6.0"
+java_home="/usr/java/jre1.6.0_35/"
+
 
 echo "Checking for PostgreSQL"
 if [ ! `which postgres` ]; then
@@ -428,6 +432,7 @@ EOF
 echo "Configuring PostgreSQL authentication"
 /etc/init.d/postgresql stop
 sed -i s/ident\ sameuser/md5/ /var/lib/pgsql/data/pg_hba.conf
+sed -i s/#listen_addresses\ \=\ \'localhost\'/listen_addresses\ \=\ \'*\'/ /var/lib/pgsql/data/postgresql.conf
 /etc/init.d/postgresql start
 
 
@@ -558,11 +563,11 @@ set_property "$f" "ooo.user" "/home/alfresco"
 set_property "$f" "img.root" "/usr/bin"
 set_property "$f" "img.exe" "convert"
 # Set location of pdf2swf explicitly since tomcat6 user does not have /usr/local/bin on the path
-set_property "$f" "swf.exe" `which pdf2swf`
+set_property "$f" "swf.exe" "pdf2swf"
 
 # Set Database properties
 set_property "$f"  "db.driver" "org.postgresql.Driver"
-set_property "$f"  "db.url" "jdbc:postgresql://localhost:3306/alfresco"
+set_property "$f"  "db.url" "jdbc:postgresql://localhost:5432/alfresco"
 set_property "$f"  "db.username" "alfresco"
 set_property "$f"  "db.password" "alfresco"
 
@@ -582,12 +587,13 @@ set_property "$f" "alfresco.port" "80"
 set_property "$f" "share.host" "localhost"
 set_property "$f" "share.port" "80"
 
+# Don't think this is needed
 # Web client and Share proxy support
-for cf in `find config -name "*$alf_version_suffix.xml"`; do
-  origname=`echo $cf | sed s/$alf_version_suffix// | sed s/config\\\\///`
-  cp $cf $CATALINA_BASE/shared/classes/$origname
-  chown -R alfresco:alfresco $CATALINA_BASE/shared/classes/alfresco
-done
+#for cf in `find config -name "*$alf_version_suffix.xml"`; do
+#  origname=`echo $cf | sed s/$alf_version_suffix// | sed s/config\\\\///`
+#  cp $cf $CATALINA_BASE/shared/classes/$origname
+#  chown -R alfresco:alfresco $CATALINA_BASE/shared/classes/alfresco
+#done
 
 # Change alfresco.log file location in log4j.properties
 set_property "$CATALINA_BASE/webapps/alfresco/WEB-INF/classes/log4j.properties" "log4j.appender.File.File" "/var/log/alfresco/alfresco.log"
@@ -645,7 +651,6 @@ if [ "$alf_install_dod" == "1" ]; then
         dl_package "$ALF_DOD_MODULE_URL" alfresco-dod5015.zip
         unzip -q alfresco-dod5015.zip "*.amp"
         install_amp $CATALINA_BASE/webapps/alfresco.war alfresco-$alf_edition-dod5015$alf_version_suffix.amp
-        rm alfresco-$alf_edition-dod5015$alf_version_suffix.amp
       ;;
     esac
   fi
@@ -695,7 +700,7 @@ fi
 # Let's make it exist!
 echo "Configuring Tomcat Catalina variables"
 echo "JAVA_HOME=\"$java_home"\" > $CATALINA_BASE/bin/setenv.sh
-echo "JAVA_OPTS=\"-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\"" >> $CATALINA_BASE/bin/setenv.sh
+echo "JAVA_OPTS=\"-Xms128m -Xmx1024m -Xss1024k -XX:MaxPermSize=256m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\"" >> $CATALINA_BASE/bin/setenv.sh
 echo "TOMCAT6_SECURITY=\"no\"" >> $CATALINA_BASE/bin/setenv.sh
 #set_property /etc/default/tomcat6 "JAVA_HOME" "\"$java_home\""
 #set_property /etc/default/tomcat6 "JAVA_OPTS" "\"-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\""
