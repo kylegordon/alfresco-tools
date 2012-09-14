@@ -31,16 +31,11 @@ alf_base_url="http://10.240.64.170/Alfresco/"
 alf_version_suffix="-4.0.2.9"
 alf_edition="enterprise"
 
-# Download URL for MySQL Connector/J
-# FIXME - Probably superfluous now
-#CONNECTOR_DL_URL='http://mirrors.dedipower.com/www.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.18.tar.gz'
-#CONNECTOR_DL_URL='http://mirrors.dedipower.com/www.mysql.com/Downloads/Connector-J/mysql-connector-java-5.1.10.tar.gz'
-#SWFTOOLS_DL_URL='http://www.swftools.org/swftools-0.9.1.tar.gz'
-
 swftools_rpm="swftools-0.9.1-5.2.x86_64.rpm"
 imagemagick_rpm="ImageMagick-6.4.3.6-7.18.x86_64.rpm"
 libmagick_rpm="libMagick++1-6.4.3.6-7.18.x86_64.rpm"
 libmagickwand_rpm="libMagickWand1-6.4.3.6-7.18.x86_64.rpm"
+openoffice_tarball="Apache_OpenOffice_incubating_3.4.1_Linux_x86_install-rpm_en-GB.tar.gz"
 
 TOMCAT_VER="apache-tomcat-6.0.35"
 TOMCAT_TAR="$TOMCAT_VER.tar.gz"
@@ -51,10 +46,6 @@ ALF_TEMP_DIR="$BASE_TEMP_DIR/alfresco-temp"
 # WAR files now packaged as a ZIP file from 3.3E/3.4 Community onwards
 ALF_WAR_PKG="alfresco-war.zip"
 CATALINA_BASE=/opt/alfresco/tomcat
-
-# MySQL credentials for creating the Alfresco database
-#MYSQL_USER=root
-#MYSQL_PASSWORD=alfresco
 
 # End configuration
 
@@ -391,18 +382,14 @@ zypper refresh
 # Set up a space to work in
 if [ ! -d "$ALF_TEMP_DIR" ]; then mkdir "$ALF_TEMP_DIR"; fi
 
-# dl_package "$ALF_DL_URL" "$ALF_TEMP_DIR"
 dl_package "$alf_base_url/$TOMCAT_TAR" "$ALF_TEMP_DIR/$TOMCAT_TAR"
-dl_package "$alf_base_url/Apache_OpenOffice_incubating_3.4.1_Linux_x86_install-rpm_en-GB.tar.gz" "$ALF_TEMP_DIR/Apache_OpenOffice_incubating_3.4.1_Linux_x86_install-rpm_en-GB.tar.gz"
 dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/NHS_Education_for_Scotland-ent41.lic"
 
 # Install the IBM Java 1.6 from the system repository
 echo "Checking for Java 1.6.0"
 if [ ! -x '/usr/java/jre1.6.0_35/' ]; then
-        #zypper install -y java-1_6_0-ibm
         zypper install -y $alf_base_url/jre-6u35-linux-amd64.rpm
 fi
-#java_home="/usr/lib64/jvm/jre-1.6.0"
 java_home="/usr/java/jre1.6.0_35/"
 
 
@@ -439,9 +426,12 @@ sed -i s/#listen_addresses\ \=\ \'localhost\'/listen_addresses\ \=\ \'*\'/ /var/
 #apt-get --yes -qq install apache2
 
 echo "Checking for OpenOffice.org"
-# FIXME
-## apt-get --yes -qq install openoffice.org
-# Only needed on systems prior to Karmic
+if [ ! -x /opt/openoffice.org3/program/soffice ]; then
+	mkdir $ALF_TEMP_DIR/openoffice/
+	dl_package $alf_base_url/$openoffice_tarball $ALF_TEMP_DIR/openoffice/$openoffice_tarball
+	tar -zxf $ALF_TEMP_DIR/openoffice/$openoffice_tarball -C $ALF_TEMP_DIR/openoffice/
+	zypper install -y $ALF_TEMP_DIR/openoffice/en-GB/RPMS/*.rpm
+fi
 
 echo "Checking for ImageMagick"
 if [ ! `which convert` ]; then
