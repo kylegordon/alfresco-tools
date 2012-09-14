@@ -363,7 +363,7 @@ if [ ! -d "$ALF_TEMP_DIR" ]; then mkdir "$ALF_TEMP_DIR"; fi
 dl_package "$alf_base_url/$TOMCAT_TAR" "$ALF_TEMP_DIR/$TOMCAT_TAR"
 #dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/NHS_Education_for_Scotland-ent41.lic"
 
-# Install the IBM Java 1.6 from the system repository
+# Install Sun Java 1.6 
 echo "Checking for Java 1.6.0"
 if [ ! -x '/usr/java/jre1.6.0_35/' ]; then
         zypper install -y $alf_base_url/jre-6u35-linux-amd64.rpm
