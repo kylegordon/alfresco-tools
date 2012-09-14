@@ -677,22 +677,12 @@ fi
 # Set Tomcat Java defaults
 # Use Sun JDK not OpenJDK
 # Disable Tomcat security policies
-## FIXME - we normally put this in startup.sh
 # startup.sh calls catalina.sh, catalina.sh calls setenv *if it exists*
 # Let's make it exist!
 echo "Configuring Tomcat Catalina variables"
 echo "JAVA_HOME=\"$java_home"\" > $CATALINA_BASE/bin/setenv.sh
 echo "JAVA_OPTS=\"-Xms128m -Xmx1024m -Xss1024k -XX:MaxPermSize=256m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\"" >> $CATALINA_BASE/bin/setenv.sh
 echo "TOMCAT6_SECURITY=\"no\"" >> $CATALINA_BASE/bin/setenv.sh
-#set_property /etc/default/tomcat6 "JAVA_HOME" "\"$java_home\""
-#set_property /etc/default/tomcat6 "JAVA_OPTS" "\"-Xms128m -Xmx1024m -Xss96k -XX:MaxPermSize=160m -Dalfresco.home=/opt/alfresco/ -Dcom.sun.management.jmxremote\""
-#set_property /etc/default/tomcat6 "TOMCAT6_SECURITY" "no"
-
-# Karmic Tomcat6 package links to eclipse-ecj.jar for jasper-jdt.jar, which breaks MyFaces
-#if [ "$ubuntu_release" == "karmic" -a -L "/usr/share/tomcat6/lib/jasper-jdt.jar" ]; then
-#  unlink "/usr/share/tomcat6/lib/jasper-jdt.jar"
-#  cp "jasper-jdt.jar" "/usr/share/tomcat6/lib"
-#fi
 
 # Enable AJP Connector if it is commented out
 ln=`grep -n '\s*<Connector port="8009" protocol="AJP/1.3" redirectPort="8443" />\s*' $CATALINA_BASE/conf/server.xml | cut -d ":" -f 1`
