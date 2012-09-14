@@ -374,9 +374,8 @@ java_home="/usr/java/jre1.6.0_35/"
 # We should probably be more graceful about this. One day
 echo "Purging PostgreSQL if it exists"
 if [ 'which postgres' ]; then
-	/etc/init.d/postgresql stop
-	rm -rf /var/lib/pgsql
 	zypper remove -y postgresql
+        rm -rf /var/lib/pgsql	
 fi
 
 echo "Checking for PostgreSQL"
