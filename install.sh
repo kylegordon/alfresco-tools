@@ -435,11 +435,6 @@ sed -i s/ident\ sameuser/md5/ /var/lib/pgsql/data/pg_hba.conf
 sed -i s/#listen_addresses\ \=\ \'localhost\'/listen_addresses\ \=\ \'*\'/ /var/lib/pgsql/data/postgresql.conf
 /etc/init.d/postgresql start
 
-
-# FIXME - We use the binary tomcat distribution
-#echo "Installing Apache Tomcat"
-#apt-get --yes -qq install tomcat6
-
 #echo "Installing Apache HTTPd"
 #apt-get --yes -qq install apache2
 
