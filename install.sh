@@ -697,20 +697,6 @@ if [[ "`head -n $((ln-1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *\<\!-
   fi
 fi
 
-# Compiling swftools (no longer required on Karmic)
-# Configure MySQL and restart
-#if [ ! -f /etc/mysql/conf.d/alfresco.cnf ]; then
-#  echo "Configuring MySQL server"
-#  cp alfresco.cnf /etc/mysql/conf.d/alfresco.cnf
-#  echo "Restarting MySQL"
-#  service mysql restart
-#fi
-
-## FIXME - Scrap this. Alfresco does its own database population
-# Create the 'alfresco' database and grant privileges
-#echo "Creating MySQL database"
-#cat create-database.sql | mysql -u $MYSQL_USER -p$MYSQL_PASSWORD
-
 # Edit apache configuration
 echo "Configuring Apache HTTPd"
 if [ ! -f /etc/apache2/conf.d/alfresco ]; then
