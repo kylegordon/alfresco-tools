@@ -438,7 +438,7 @@ sed -i s/#listen_addresses\ \=\ \'localhost\'/listen_addresses\ \=\ \'*\'/ /var/
 #echo "Installing Apache HTTPd"
 #apt-get --yes -qq install apache2
 
-echo "Installing OpenOffice.org"
+echo "Checking for OpenOffice.org"
 # FIXME
 ## apt-get --yes -qq install openoffice.org
 # Only needed on systems prior to Karmic
@@ -673,19 +673,6 @@ rm -rf $CATALINA_BASE/webapps/alfresco
 if [ -d $CATALINA_BASE/webapps/share ]; then
   rm -rf $CATALINA_BASE/webapps/share
 fi
-
-# FIXME - We're using either PostgreSQL or Oracle
-# Download and install Connector/J
-#jarfiles=`find "$CATALINA_BASE" -name "mysql-connector-java-*-bin.jar"`
-#if [ -z "$jarfiles" ]; then
-#  echo "Downloading and installing MySQL Connector/J"
-#  curl $CONNECTOR_DL_URL -o $BASE_TEMP_DIR/mysql-connector-java.tar.gz
-#  jar=`tar tzf $BASE_TEMP_DIR/mysql-connector-java.tar.gz | grep 'mysql-connector-java.*\-bin.jar'`
-#  tar xzf $BASE_TEMP_DIR/mysql-connector-java.tar.gz -C $BASE_TEMP_DIR $jar
-#  mv $BASE_TEMP_DIR/$jar $CATALINA_BASE/shared/lib/
-#  chown alfresco:alfresco $CATALINA_BASE/shared/lib/*.jar
-#  rm -rf $BASE_TEMP_DIR/mysql-connector*
-#fi
 
 # Set Tomcat Java defaults
 # Use Sun JDK not OpenJDK
