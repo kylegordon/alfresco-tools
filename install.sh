@@ -47,6 +47,13 @@ ALF_TEMP_DIR="$BASE_TEMP_DIR/alfresco-temp"
 ALF_WAR_PKG="alfresco-war.zip"
 CATALINA_BASE=/opt/alfresco/tomcat
 
+memsize=`cat /proc/meminfo | grep MemTotal | awk {'print $2'}`
+if [ $memsize -lt 4106527 ]; then
+	echo "You have less than 4GB of memory. Please obtain more memory"
+	echo "Exiting now"
+	exit 0
+fi
+
 # End configuration
 
 # Do not edit below this line
@@ -82,7 +89,7 @@ cleanup_war=1
 
 # FIXME
 # Whether to clean up the temp dir contents afterwards
-cleanup_after=0
+cleanup_after=1
 
 # Detect command-line options and their parameters
 p_opt=""
@@ -299,8 +306,6 @@ function install_mmt_tool {
         cp "$ALF_TEMP_DIR/bin/alfresco-mmt.jar" "$MMT_JAR"
       else
         echo "Downloading Module Management Tool"
-	echo "FOO IS $ALF_MMT_URL"
-	echo "alf_version_suffix IS $alf_version_suffix"
         dl_package "$ALF_MMT_URL" "$MMT_JAR"
       fi
     fi
@@ -363,10 +368,14 @@ if [ ! -d "$ALF_TEMP_DIR" ]; then mkdir "$ALF_TEMP_DIR"; fi
 dl_package "$alf_base_url/$TOMCAT_TAR" "$ALF_TEMP_DIR/$TOMCAT_TAR"
 #dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/NHS_Education_for_Scotland-ent41.lic"
 
+if [ -x '/usr/lib64/jvm/jre-1.6.0-ibm' ]; then
+	echo "Removing IBM Java"
+	zypper remove -y java-1_6_0-ibm-fonts
+fi
+
 # Install Sun Java 1.6 
 echo "Checking for Java 1.6.0"
 if [ ! -x '/usr/java/jre1.6.0_35/' ]; then
-	zypper remove -y java-1_6_0-ibm-fonts
         zypper install -y $alf_base_url/jre-6u35-linux-amd64.rpm
 fi
 java_home="/usr/java/jre1.6.0_35/"
@@ -528,12 +537,15 @@ f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 # Edit alfresco-global.properties
 # Index recovery mode
 set_property "$f" "index.recovery.mode" "AUTO"
+set_property" $f" "hibernate.default_schema" "NES_ALFRESCO"
 
 # Repository locations
+echo "Setting repo locations"
 set_property "$f" "dir.root" "/opt/alfresco/alf_data"
-set_property "$f" "dir.keystore" "\$\{dir.root\}\/keystore"
+set_property "$f" "dir.keystore" "\${dir.root}\/keystore"
 
 # Program locations
+echo "Setting program locations"
 set_property "$f" "ooo.enabled" "true"
 set_property "$f" "ooo.exe" "/opt/openoffice.org3/program/soffice"
 set_property "$f" "ooo.user" "/home/alfresco"
@@ -547,6 +559,23 @@ set_property "$f" "db.driver" "org.postgresql.Driver"
 set_property "$f" "db.url" "jdbc:postgresql://localhost:5432/alfresco"
 set_property "$f" "db.username" "alfresco"
 set_property "$f" "db.password" "alfresco"
+set_property "$f" "db.pool.validate.query" "SELECT 1 FROM DUAL"
+
+# Remote Management Interface Ports
+set_property "$f" "avm.rmi.service.port" "50501"
+set_property "$f" "avmsync.rmi.service.port" "50502"
+set_property "$f" "attribute.rmi.service.port" "50503"
+set_property "$f" "authentication.rmi.service.port" "50504"
+set_property "$f" "repo.rmi.service.port" "50505"
+set_property "$f" "action.rmi.service.port" "50506"
+set_property "$f" "wcm-deployment-receiver.rmi.service.port" "50507"
+set_property "$f" "monitor.rmi.service.port" "50508"
+
+
+# JODConverter settings
+set_property "$f" "jodconverter.enabled" "true"
+set_property "$f" "jodconverter.officeHome" "/opt/openoffice.org3/program/"
+set_property "$f" "jodconverter.portNumbers" "8100"
 
 # Enable IMAP
 if [ "$alf_enable_imap" == "1" ]; then
@@ -554,15 +583,29 @@ if [ "$alf_enable_imap" == "1" ]; then
   set_property "$f" "imap.server.host" "0.0.0.0"
 fi
 
-# Disable CIFS and FTP
+# Disable CIFS, FTP and NFS
 set_property "$f" "cifs.enabled" "false"
+set_property "$f" "cifs.disableNativeCode" "true"
 set_property "$f" "ftp.enabled" "false"
+set_property "$f" "ftp.port" "2121"
+set_property "$f" "ftp.ipv6.enabled" "false"
+set_property "$f" "nfs.enabled" "false"
 
 # Set host name and port
 set_property "$f" "alfresco.host" "localhost"
 set_property "$f" "alfresco.port" "80"
 set_property "$f" "share.host" "localhost"
 set_property "$f" "share.port" "80"
+
+# Set mail settings
+set_property "$f" "notification.email.siteinvite" "true"
+set_property "$f" "mail.host" "smtp.nes.scot.nhs.uk"
+set_property "$f" "mail.port" "25"
+set_property "$f" "mail.protocol" "smtp"
+set_property "$f" "mail.encoding" "UTF-8"
+set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
+set_property "$f" "mail.smtp.auth" "false"
+
 
 # Don't think this is needed
 # Web client and Share proxy support
@@ -608,7 +651,7 @@ if [ "$alf_install_vti" == "1" ]; then
         rm alfresco-$alf_edition-spp$alf_version_suffix.amp vti-module.zip
       ;;
     esac
-    set_property "$f" "vti.alfresco.alfresoHostWithPort" "http://localhost"
+    set_property "$f" "vti.alfresco.alfrescoHostWithPort" "http://localhost"
     set_property "$f" "vti.share.shareHostWithPort" "http://localhost"
   fi
 fi
@@ -720,7 +763,7 @@ if [ $alf_network_logged_in -eq 1 ]; then
   alf_network_log_out
 fi
 
-echo "Alfresco fully installed. You can start Tomcat by typing: 'sudo /etc/init.d/tomcat6 start'"
+echo "Alfresco fully installed. You can start Alfresco by typing: 'sudo /opt/alfresco/tomcat/bin/startup.sh'"
 exit
 
 # End
