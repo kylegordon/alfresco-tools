@@ -27,7 +27,7 @@
 # Begin configuration
 
 # The base URL to download from, and the version of Alfresco in use
-alf_base_url="http://10.240.64.170/Alfresco/"
+alf_base_url="http://nssmt001.nes.scot.nhs.uk/instserv/software/alfresco/"
 alf_version_suffix="-4.0.2.9"
 alf_edition="enterprise"
 
@@ -279,28 +279,6 @@ function set_property {
   fi
 }
 
-## FIXME Superfluous
-#function build_swftools {
-#  # swftools compilation - not required for karmic or lucid as v0.9.0 exists in the repository
-#  wget "$SWFTOOLS_DL_URL"
-#  swftools=`find . -name "swftools*" -type f`
-#  if [ ! -z "$swftools" ]; then
-#    tar xzf "$swftools"
-#    swftoolsdir=`find . -name "swftools*" -type d`
-#    if [ ! -z "$swftoolsdir" ]; then
-#      cd "$swftoolsdir"
-#      apt-get --yes install build-essential zlib1g-dev libfreetype6-dev libjpeg-dev libungif4-dev
-#      ./configure && make
-#      checkinstall --pkgname=swftools --pkgversion "4:0.9.1-1" --backup=no --deldoc=yes --fstrans=no --default
-#      cd ..
-#    fi
-#    #rm -rf swftools-*
-#  else
-#    echo "Could not locate SWFTools download file"
-#    exit 1
-#  fi
-#}
-
 #function install_bootstrap_data {
 #  mkdir "$2"
 #  unzip "$1" -d "$2"
@@ -383,7 +361,7 @@ zypper refresh
 if [ ! -d "$ALF_TEMP_DIR" ]; then mkdir "$ALF_TEMP_DIR"; fi
 
 dl_package "$alf_base_url/$TOMCAT_TAR" "$ALF_TEMP_DIR/$TOMCAT_TAR"
-dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/NHS_Education_for_Scotland-ent41.lic"
+#dl_package "$alf_base_url/NHS_Education_for_Scotland-ent41.lic" "$ALF_TEMP_DIR/NHS_Education_for_Scotland-ent41.lic"
 
 # Install the IBM Java 1.6 from the system repository
 echo "Checking for Java 1.6.0"
@@ -541,19 +519,27 @@ echo "Configuring Alfresco"
 f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 
 # Edit alfresco-global.properties
+# Index recovery mode
+set_property "$f" "index.recovery.mode" "AUTO"
+
+# Repository locations
 set_property "$f" "dir.root" "/opt/alfresco/alf_data"
+set_property "$f" "dir.keystore" "\$\{dir.root\}\/keystore"
+
+# Program locations
+set_property "$f" "ooo.enabled" "true"
 set_property "$f" "ooo.exe" "/opt/openoffice.org3/program/soffice"
 set_property "$f" "ooo.user" "/home/alfresco"
 set_property "$f" "img.root" "/usr/bin"
 set_property "$f" "img.exe" "convert"
-# Set location of pdf2swf explicitly since tomcat6 user does not have /usr/local/bin on the path
 set_property "$f" "swf.exe" "pdf2swf"
 
 # Set Database properties
-set_property "$f"  "db.driver" "org.postgresql.Driver"
-set_property "$f"  "db.url" "jdbc:postgresql://localhost:5432/alfresco"
-set_property "$f"  "db.username" "alfresco"
-set_property "$f"  "db.password" "alfresco"
+set_property "$f" "db.schema.update" "true"
+set_property "$f" "db.driver" "org.postgresql.Driver"
+set_property "$f" "db.url" "jdbc:postgresql://localhost:5432/alfresco"
+set_property "$f" "db.username" "alfresco"
+set_property "$f" "db.password" "alfresco"
 
 # Enable IMAP
 if [ "$alf_enable_imap" == "1" ]; then
