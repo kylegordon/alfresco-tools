@@ -366,6 +366,7 @@ dl_package "$alf_base_url/$TOMCAT_TAR" "$ALF_TEMP_DIR/$TOMCAT_TAR"
 # Install Sun Java 1.6 
 echo "Checking for Java 1.6.0"
 if [ ! -x '/usr/java/jre1.6.0_35/' ]; then
+	zypper remove -y java-1_6_0-ibm-fonts
         zypper install -y $alf_base_url/jre-6u35-linux-amd64.rpm
 fi
 java_home="/usr/java/jre1.6.0_35/"
