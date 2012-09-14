@@ -698,16 +698,16 @@ if [[ "`head -n $((ln-1)) $CATALINA_BASE/conf/server.xml | tail -n 1`" == *\<\!-
 fi
 
 # Edit apache configuration
-echo "Configuring Apache HTTPd"
-if [ ! -f /etc/apache2/conf.d/alfresco ]; then
-  cp alfresco-apache2.conf /etc/apache2/conf.d/alfresco
-fi
-if [ -f /etc/apache2/mods-available/proxy.conf ]; then mv /etc/apache2/mods-available/proxy.conf /etc/apache2/mods-enabled/; fi
-if [ -f /etc/apache2/mods-available/proxy_ajp.load ]; then mv /etc/apache2/mods-available/proxy_ajp.load /etc/apache2/mods-enabled/; fi
-if [ -f /etc/apache2/mods-available/proxy.load ]; then mv /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/; fi
-if [ ! -f /var/www/custom-503.html ]; then cp custom-503.html /var/www; fi
-echo "Restarting HTTPd"
-/etc/init.d/apache2 restart
+#echo "Configuring Apache HTTPd"
+#if [ ! -f /etc/apache2/conf.d/alfresco ]; then
+#  cp alfresco-apache2.conf /etc/apache2/conf.d/alfresco
+#fi
+#if [ -f /etc/apache2/mods-available/proxy.conf ]; then mv /etc/apache2/mods-available/proxy.conf /etc/apache2/mods-enabled/; fi
+#if [ -f /etc/apache2/mods-available/proxy_ajp.load ]; then mv /etc/apache2/mods-available/proxy_ajp.load /etc/apache2/mods-enabled/; fi
+#if [ -f /etc/apache2/mods-available/proxy.load ]; then mv /etc/apache2/mods-available/proxy.load /etc/apache2/mods-enabled/; fi
+#if [ ! -f /var/www/custom-503.html ]; then cp custom-503.html /var/www; fi
+#echo "Restarting HTTPd"
+#/etc/init.d/apache2 restart
 
 # Tuning
 echo "Final system configuration"
