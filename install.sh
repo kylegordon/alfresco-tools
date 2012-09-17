@@ -384,6 +384,7 @@ java_home="/usr/java/jre1.6.0_35/"
 echo "Purging PostgreSQL if it exists"
 if [ 'which postgres' ]; then
 	zypper remove -y postgresql
+	zypper remove -y postgresql91
         rm -rf /var/lib/pgsql	
 fi
 
@@ -413,6 +414,7 @@ EOF
 echo "Configuring PostgreSQL authentication"
 /etc/init.d/postgresql stop
 sed -i s/ident\ sameuser/md5/ /var/lib/pgsql/data/pg_hba.conf
+sed -i s/ident/md5/ /var/lib/pgsql/data/pg_hba.conf
 sed -i s/#listen_addresses\ \=\ \'localhost\'/listen_addresses\ \=\ \'*\'/ /var/lib/pgsql/data/postgresql.conf
 /etc/init.d/postgresql start
 
@@ -496,8 +498,6 @@ cp -r $ALF_TEMP_DIR/web-server/* $CATALINA_BASE/
 # Install MMT
 install_mmt_tool
 
-
-
 # Copy WAR files into place and extract if necessary
 echo "Copying WAR files into place and unpacking"
 if [ ! -f $CATALINA_BASE/webapps/alfresco.war ]; then
@@ -537,12 +537,12 @@ f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 # Edit alfresco-global.properties
 # Index recovery mode
 set_property "$f" "index.recovery.mode" "AUTO"
-set_property" $f" "hibernate.default_schema" "NES_ALFRESCO"
+#set_property" $f" "hibernate.default_schema" "NES_ALFRESCO"
 
 # Repository locations
 echo "Setting repo locations"
 set_property "$f" "dir.root" "/opt/alfresco/alf_data"
-set_property "$f" "dir.keystore" "\${dir.root}\/keystore"
+#set_property "$f" "dir.keystore" "\${dir.root}/keystore"
 
 # Program locations
 echo "Setting program locations"
@@ -559,7 +559,11 @@ set_property "$f" "db.driver" "org.postgresql.Driver"
 set_property "$f" "db.url" "jdbc:postgresql://localhost:5432/alfresco"
 set_property "$f" "db.username" "alfresco"
 set_property "$f" "db.password" "alfresco"
-set_property "$f" "db.pool.validate.query" "SELECT 1 FROM DUAL"
+#FIXME - Only required for Oracle
+#set_property "$f" "db.pool.validate.query" "SELECT 1 FROM DUAL"
+#set_property "$f" "db.driver" "oracle.jdbc.OracleDriver"
+#set_property "$f" "db.url" "jdbc:oracle:thin:@chalf002.nes.scot.nhs.uk:1521:alf"
+
 
 # Remote Management Interface Ports
 set_property "$f" "avm.rmi.service.port" "50501"
@@ -574,7 +578,7 @@ set_property "$f" "monitor.rmi.service.port" "50508"
 
 # JODConverter settings
 set_property "$f" "jodconverter.enabled" "true"
-set_property "$f" "jodconverter.officeHome" "/opt/openoffice.org3/program/"
+set_property "$f" "jodconverter.officeHome" "/opt/openoffice.org3/program"
 set_property "$f" "jodconverter.portNumbers" "8100"
 
 # Enable IMAP
@@ -586,16 +590,16 @@ fi
 # Disable CIFS, FTP and NFS
 set_property "$f" "cifs.enabled" "false"
 set_property "$f" "cifs.disableNativeCode" "true"
-set_property "$f" "ftp.enabled" "false"
+set_property "$f" "ftp.enabled" "true"
 set_property "$f" "ftp.port" "2121"
 set_property "$f" "ftp.ipv6.enabled" "false"
 set_property "$f" "nfs.enabled" "false"
 
 # Set host name and port
-set_property "$f" "alfresco.host" "localhost"
-set_property "$f" "alfresco.port" "80"
-set_property "$f" "share.host" "localhost"
-set_property "$f" "share.port" "80"
+#set_property "$f" "alfresco.host" "localhost"
+#set_property "$f" "alfresco.port" "80"
+#set_property "$f" "share.host" "localhost"
+#set_property "$f" "share.port" "80"
 
 # Set mail settings
 set_property "$f" "notification.email.siteinvite" "true"
@@ -605,6 +609,40 @@ set_property "$f" "mail.protocol" "smtp"
 set_property "$f" "mail.encoding" "UTF-8"
 set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
 set_property "$f" "mail.smtp.auth" "false"
+
+# LDAP Settings
+set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,ldap1:ldap"
+set_property "$f" "ldap.authentication.active" "true"
+set_property "$f" "ldap.authentication.allowGuestLogin" "false"
+set_property "$f" "ldap.authentication.userNameFormat" ""
+set_property "$f" "ldap.authentication.java.naming.factory.initial" "com.sun.jndi.ldap.LdapCtxFactory"
+set_property "$f" "ldap.authentication.java.naming.provider.url" "ldap://ldap1.nes.scot.nhs.uk:389"
+set_property "$f" "ldap.authentication.java.naming.security.authentication" "simple"
+set_property "$f" "ldap.authentication.escapeCommasInBind" "false"
+set_property "$f" "ldap.authentication.escapeCommasInUid" "false"
+set_property "$f" "ldap.authentication.defaultAdministratorUserNames" "alfresco_service,KyleG,DavidL"
+set_property "$f" "ldap.synchronization.active" "true"
+set_property "$f" "ldap.synchronization.java.naming.security.authentication" "simple"
+set_property "$f" "ldap.synchronization.java.naming.security.principal" "cn=alfresco_service,ou=NATIONAL_SERVICES,o=SCPMDE"
+set_property "$f" "ldap.synchronization.java.naming.security.credentials" ""
+set_property "$f" "ldap.synchronization.queryBatchSize" "0"
+set_property "$f" "ldap.synchronization.attributeBatchSize" "0"
+set_property "$f" "ldap.synchronization.groupQuery" "(objectclass\=groupOfNames)"
+set_property "$f" "ldap.synchronization.groupDifferentialQuery" "(&(objectclass\=groupOfNames)(!(modifyTimestamp<\={0})))"
+set_property "$f" "ldap.synchronization.personQuery" "(&(objectclass\=inetOrgPerson)(groupMembership=cn=ECMS_Users,o=SCPMDE))"
+set_property "$f" "ldap.synchronization.personDifferentialQuery" "(&(objectclass\=inetOrgPerson)(groupMembership=cn=ECMS_Users,o=SCPMDE)(!(modifyTimestamp<\={0})))"
+set_property "$f" "ldap.synchronization.userSearchBase" "o=SCPMDE"
+set_property "$f" "ldap.synchronization.groupSearchBase" "o=SCPMDE"
+set_property "$f" "ldap.synchronization.modifyTimestampAttributeName" "modifyTimestamp"
+set_property "$f" "ldap.synchronization.timestampFormat" "yyyyMMddHHmmss'Z'"
+set_property "$f" "ldap.synchronization.userIdAttributeName" "uid"
+set_property "$f" "ldap.synchronization.userFirstNameAttributeName" "givenName"
+set_property "$f" "ldap.synchronization.userLastNameAttributeName" "sn"
+set_property "$f" "ldap.synchronization.userEmailAttributeName" "mail"
+set_property "$f" "ldap.synchronization.userOrganizationalIdAttributeName" "o"
+set_property "$f" "ldap.synchronization.defaultHomeFolderProvider" "userHomesHomeFolderProvider"
+set_property "$f" "ldap.synchronization.groupIdAttributeName" "uid"
+
 
 
 # Don't think this is needed
@@ -763,7 +801,10 @@ if [ $alf_network_logged_in -eq 1 ]; then
   alf_network_log_out
 fi
 
-echo "Alfresco fully installed. You can start Alfresco by typing: 'sudo /opt/alfresco/tomcat/bin/startup.sh'"
+echo "Alfresco fully installed."
+echo "Please set the LDAP password parameter ldap.synchronization.java.naming.security.credentials in"
+echo "/opt/alfresco/tomcat/shared/classes/alfresco-global.properties before starting"
+echo "You can start Alfresco by typing: '/opt/alfresco/tomcat/bin/startup.sh' as root"
 exit
 
 # End
