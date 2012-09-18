@@ -6,10 +6,6 @@
 # Initial author: Will Abson
 # Further changes by: Kyle Gordon
 # 
-# This script will install a complete Alfresco system and all prerequisites on an Ubuntu Linux EC2 
-# image. The script has been tested on the official Maverick image available from Canonical - 
-# see https://help.ubuntu.com/community/EC2StartersGuide.
-#
 # TODO
 #
 # * Test JMX connections inbound
@@ -42,8 +38,6 @@ TOMCAT_TAR="$TOMCAT_VER.tar.gz"
 
 BASE_TEMP_DIR="/tmp"
 ALF_TEMP_DIR="$BASE_TEMP_DIR/alfresco-temp"
-#ALF_WAR_PKG="alfresco-war.tar.gz"
-# WAR files now packaged as a ZIP file from 3.3E/3.4 Community onwards
 ALF_WAR_PKG="alfresco-war.zip"
 CATALINA_BASE=/opt/alfresco/tomcat
 
