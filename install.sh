@@ -535,9 +535,9 @@ echo "Configuring Alfresco"
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003
-dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/nsedm001-context.xml
-dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/nsedm002-context.xml
-dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/nsedm003-context.xml
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/nsedm001-context.xml
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/nsedm002-context.xml
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/nsedm003-context.xml
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm001.nes.scot.nhs.uk:389"
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm002.nes.scot.nhs.uk:389"
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
@@ -621,7 +621,7 @@ set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
 set_property "$f" "mail.smtp.auth" "false"
 
 # Authentication chain
-set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,ldap1:ldap,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
+set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
 
 #LDAP Settings
 set_property "$f" "ldap.authentication.active" "true"
