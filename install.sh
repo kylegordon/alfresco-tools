@@ -532,6 +532,16 @@ fi
 
 echo "Configuring Alfresco"
 
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003
+dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/nsedm001-context.xml
+dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/nsedm002-context.xml
+dl_package $alf_base_url/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/nsedm003-context.xml
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm001.nes.scot.nhs.uk:389"
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm002.nes.scot.nhs.uk:389"
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
+
 f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 
 # Edit alfresco-global.properties
@@ -610,13 +620,15 @@ set_property "$f" "mail.encoding" "UTF-8"
 set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
 set_property "$f" "mail.smtp.auth" "false"
 
-# LDAP Settings
-set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,ldap1:ldap"
+# Authentication chain
+set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,ldap1:ldap,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
+
+#LDAP Settings
 set_property "$f" "ldap.authentication.active" "true"
 set_property "$f" "ldap.authentication.allowGuestLogin" "false"
 set_property "$f" "ldap.authentication.userNameFormat" ""
 set_property "$f" "ldap.authentication.java.naming.factory.initial" "com.sun.jndi.ldap.LdapCtxFactory"
-set_property "$f" "ldap.authentication.java.naming.provider.url" "ldap://ldap1.nes.scot.nhs.uk:389"
+#set_property "$f" "ldap.authentication.java.naming.provider.url" "ldap://ldap1.nes.scot.nhs.uk:389"
 set_property "$f" "ldap.authentication.java.naming.security.authentication" "simple"
 set_property "$f" "ldap.authentication.escapeCommasInBind" "false"
 set_property "$f" "ldap.authentication.escapeCommasInUid" "false"
@@ -642,7 +654,7 @@ set_property "$f" "ldap.synchronization.userEmailAttributeName" "mail"
 set_property "$f" "ldap.synchronization.userOrganizationalIdAttributeName" "o"
 set_property "$f" "ldap.synchronization.defaultHomeFolderProvider" "userHomesHomeFolderProvider"
 set_property "$f" "ldap.synchronization.groupIdAttributeName" "uid"
-
+set_property "$f" "ldap.synchronization.userTelephoneNumberAttributeName" "telephoneNumber"
 
 
 # Don't think this is needed
