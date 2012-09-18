@@ -621,7 +621,7 @@ set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
 set_property "$f" "mail.smtp.auth" "false"
 
 # Authentication chain
-set_property "$f" "authentication.chain=alfrescoNtlm1:alfrescoNtlm,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
+set_property "$f" "authentication.chain" "alfrescoNtlm1:alfrescoNtlm,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
 
 #LDAP Settings
 set_property "$f" "ldap.authentication.active" "true"
