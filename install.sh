@@ -121,6 +121,9 @@ do
       --enable-ftp)
       	alf_enable_ftp=1
 	;;
+      --disable-ftp)
+        alf_enable_Ftp=0
+	;;
       --enable-smtp)
         alf_enable_smtp=1
         ;;
