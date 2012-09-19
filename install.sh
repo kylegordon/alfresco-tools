@@ -553,6 +553,16 @@ set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authent
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm002.nes.scot.nhs.uk:389"
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
 
+## If there's privileged ports going to be used, get ready to forward them
+if [ "$alf_enable_ftp" == "1" ] || [ "$alf_enable_imap" == "1" ] || [ "$alf_enable_cifs" == "1" ] 
+  sysctl -w net.ipv6.conf.all.forwarding=1
+  sysctl -w net.ipv4.conf.all.forwarding=1
+  iptables -P INPUT ACCEPT
+  iptables -P FORWARD ACCEPT
+  iptables -P OUTPUT ACCEPT
+fi
+
+
 f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 
 # Edit alfresco-global.properties
