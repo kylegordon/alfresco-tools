@@ -73,6 +73,9 @@ alf_install_dod=0
 # Whether to enable IMAP
 alf_enable_imap=1
 
+# Whether to enable FTP
+alf_enable_ftp=1
+
 # Whether to enable inbound SMTP - not yet implemented
 alf_enable_smtp=0
 
@@ -112,6 +115,12 @@ do
       --enable-imap)
         alf_enable_imap=1
         ;;
+      --disable-imap)
+        alf_enable_imap=0
+	;;
+      --enable-ftp)
+      	alf_enable_ftp=1
+	;;
       --enable-smtp)
         alf_enable_smtp=1
         ;;
@@ -600,9 +609,12 @@ fi
 # Disable CIFS, FTP and NFS
 set_property "$f" "cifs.enabled" "false"
 set_property "$f" "cifs.disableNativeCode" "true"
-set_property "$f" "ftp.enabled" "true"
-set_property "$f" "ftp.port" "2121"
-set_property "$f" "ftp.ipv6.enabled" "false"
+
+if [ "$alf_enable_ftp" == "1" ]; then
+  set_property "$f" "ftp.enabled" "true"
+  set_property "$f" "ftp.port" "2121"
+  set_property "$f" "ftp.ipv6.enabled" "false"
+fi
 set_property "$f" "nfs.enabled" "false"
 
 # Set host name and port
