@@ -617,6 +617,7 @@ if [ "$alf_enable_imap" == "1" ]; then
   set_property "$f" "imap.server.enabled" "true"
   set_property "$f" "imap.server.host" "0.0.0.0"
   set_property "$f" "imap.server.port" "2143"
+  iptables -t nat -A PREROUTING -p tcp --dport 143 -j REDIRECT --to-ports 2143
 fi
 
 # Disable CIFS, FTP and NFS
@@ -628,13 +629,19 @@ if [ "$alf_enable_cifs" == "1" ]; then
   set_property "$f" "cifs.netBIOSSMB.namePort" "1137"
   set_property "$f" "cifs.netBIOSSMB.datagramPort" "1138"
   set_property "$f" "cifs.netBIOSSMB.sessionPort" "1139"
+  iptables -t nat -A PREROUTING -p tcp --dport 445 -j REDIRECT --to-ports 1445
+  iptables -t nat -A PREROUTING -p tcp --dport 139 -j REDIRECT --to-ports 1139
+  iptables -t nat -A PREROUTING -p udp --dport 137 -j REDIRECT --to-ports 1137
+  iptables -t nat -A PREROUTING -p udp --dport 138 -j REDIRECT --to-ports 1138
 fi
 
 if [ "$alf_enable_ftp" == "1" ]; then
   set_property "$f" "ftp.enabled" "true"
   set_property "$f" "ftp.port" "2121"
   set_property "$f" "ftp.ipv6.enabled" "false"
+  iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 2121
 fi
+
 set_property "$f" "nfs.enabled" "false"
 
 # Set host name and port
