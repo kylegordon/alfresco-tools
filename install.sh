@@ -638,7 +638,6 @@ fi
 if [ "$alf_enable_ftp" == "1" ]; then
   set_property "$f" "ftp.enabled" "true"
   set_property "$f" "ftp.port" "2121"
-  set_property "$f" "ftp.ipv6.enabled" "false"
   iptables -t nat -A PREROUTING -p tcp --dport 21 -j REDIRECT --to-ports 2121
 fi
 
