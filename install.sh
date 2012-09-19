@@ -60,9 +60,6 @@ fi
 # Whether the Share webapp will be installed
 alf_install_share=1
 
-# Whether the mobile webapp will be installed
-alf_install_mobile=0
-
 # Whether SPP support will be installed
 alf_install_vti=1
 
@@ -102,9 +99,6 @@ do
     case "$p" in 
       --no-install-share)
         alf_install_share=0
-        ;;
-      --install-mobile)
-        alf_install_mobile=1
         ;;
       --no-install-vti)
         alf_install_vti=0
@@ -517,9 +511,6 @@ fi
 if [ "$alf_install_share" -eq 1 -a ! -f $CATALINA_BASE/webapps/share.war ]; then
   copy_war "$ALF_TEMP_DIR" "share.war" "$CATALINA_BASE/webapps/"
 fi
-if [ "$alf_install_mobile" -eq 1 -a ! -f $CATALINA_BASE/webapps/mobile.war ]; then
-  copy_war "$ALF_TEMP_DIR" "mobile.war" "$CATALINA_BASE/webapps/"
-fi
 
 # Unpack the WAR files so we can make required log4j config changes
 if [ ! -d $CATALINA_BASE/webapps/alfresco ]; then
@@ -685,9 +676,7 @@ set_property "$CATALINA_BASE/webapps/alfresco/WEB-INF/classes/log4j.properties" 
 if [ "$alf_install_share" == "1" ]; then
   set_property "$CATALINA_BASE/webapps/share/WEB-INF/classes/log4j.properties" "log4j.appender.File.File" "/var/log/alfresco/share.log"
 fi
-if [ "$alf_install_mobile" == "1" ]; then
-  set_property "$CATALINA_BASE/webapps/mobile/WEB-INF/classes/log4j.properties" "log4j.appender.File.File" "/var/log/alfresco/mobile.log"
-fi
+
 # Add updated files back to the WAR
 pack_war $CATALINA_BASE/webapps alfresco.war
 if [ "$alf_install_share" == "1" ]; then
