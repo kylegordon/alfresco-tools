@@ -71,7 +71,7 @@ alf_install_vti=1
 alf_install_dod=0
 
 # Whether to enable IMAP
-alf_enable_imap=0
+alf_enable_imap=1
 
 # Whether to enable inbound SMTP - not yet implemented
 alf_enable_smtp=0
@@ -594,6 +594,7 @@ set_property "$f" "jodconverter.portNumbers" "8100"
 if [ "$alf_enable_imap" == "1" ]; then
   set_property "$f" "imap.server.enabled" "true"
   set_property "$f" "imap.server.host" "0.0.0.0"
+  set_property "$f" "imap.server.port" "2143"
 fi
 
 # Disable CIFS, FTP and NFS
