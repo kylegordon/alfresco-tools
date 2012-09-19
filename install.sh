@@ -119,7 +119,7 @@ do
       	alf_enable_ftp=1
 	;;
       --disable-ftp)
-        alf_enable_Ftp=0
+        alf_enable_ftp=0
 	;;
       --enable-cifs)
         alf_enable_cifs=1
