@@ -73,6 +73,9 @@ alf_enable_imap=1
 # Whether to enable FTP
 alf_enable_ftp=1
 
+# Whether to enable CIFS
+alf_enable_cifs=0
+
 # Whether to enable inbound SMTP - not yet implemented
 alf_enable_smtp=0
 
@@ -118,6 +121,12 @@ do
       --disable-ftp)
         alf_enable_Ftp=0
 	;;
+      --enable-cifs)
+        alf_enable_cifs=1
+        ;;
+      --disable-cifs)
+        alf_enable_cifs=0
+        ;;
       --enable-smtp)
         alf_enable_smtp=1
         ;;
@@ -601,8 +610,15 @@ if [ "$alf_enable_imap" == "1" ]; then
 fi
 
 # Disable CIFS, FTP and NFS
-set_property "$f" "cifs.enabled" "false"
-set_property "$f" "cifs.disableNativeCode" "true"
+if [ "$alf_enable_cifs" == "1" ]; then
+  ## Info from http://wiki.alfresco.com/wiki/File_Server_Subsystem_4.0#Running_SMB.2FCIFS_from_a_normal_user_account
+  set_property "$f" "cifs.enabled" "false"
+  set_property "$f" "cifs.disableNativeCode" "true"
+  set_property "$f" "cifs.tcpipSMB.port" "1445"
+  set_property "$f" "cifs.netBIOSSMB.namePort" "1137"
+  set_property "$f" "cifs.netBIOSSMB.datagramPort" "1138"
+  set_property "$f" "cifs.netBIOSSMB.sessionPort" "1139"
+fi
 
 if [ "$alf_enable_ftp" == "1" ]; then
   set_property "$f" "ftp.enabled" "true"
