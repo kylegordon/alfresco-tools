@@ -48,6 +48,11 @@ if [ $memsize -lt 4106527 ]; then
 	exit 0
 fi
 
+if [ -z "`grep -i $HOSTNAME /etc/hosts`" ]; then
+	echo "You do not have your hostname in /etc/hosts"
+	echo "Please correct this and try again"
+fi
+
 # End configuration
 
 # Do not edit below this line
