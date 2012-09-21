@@ -67,6 +67,9 @@ alf_install_vti=1
 # FIXME - is DOD required?! Not available in v4 it would seem
 alf_install_dod=0
 
+# Whether to install the Records Management modules
+alf_install_rm=1
+
 # Whether to enable IMAP
 alf_enable_imap=1
 
@@ -541,8 +544,12 @@ if [ $alf_install_sample_config -a ! -d $CATALINA_BASE/shared/classes/alfresco/e
   copy_extension_config "$ALF_TEMP_DIR" "$CATALINA_BASE"
 fi
 
-echo "Configuring Alfresco"
+echo "Installing init script"
+dl_package $alf_base_url/alfresco.init /etc/init.d/alfresco
+chmod +x /etc/init.d/alfresco
+chkconfig alfresco on
 
+echo "Configuring Alfresco"
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002
 mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003
@@ -852,7 +859,8 @@ fi
 echo "Alfresco fully installed."
 echo "Please set the LDAP password parameter ldap.synchronization.java.naming.security.credentials in"
 echo "/opt/alfresco/tomcat/shared/classes/alfresco-global.properties before starting"
-echo "You can start Alfresco by typing: '/opt/alfresco/tomcat/bin/startup.sh' as root"
+echo "You can start Alfresco by typing: '/etc/init.d/alfresco start' as root"
+echo "and stop it by typing '/etc/init.d/alfresco stop' as root too"
 exit
 
 # End
