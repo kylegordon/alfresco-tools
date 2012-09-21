@@ -1,0 +1,39 @@
+#!/bin/sh
+#
+# chkconfig: 2345 80 30 
+# description: Alfresco Enterprise
+#
+
+RETVAL=0
+
+start () {
+    su alfresco -c '/opt/Alfresco/alfresco.sh start "$2"'
+    RETVAL=$?
+    if [ -d "/var/lock/subsys" ] && [ `id -u` = 0 ] && [ $RETVAL -eq 0 ] ; then
+        touch /var/lock/subsys/alfresco
+    fi
+
+}
+
+stop () {
+    su alfresco -c '/opt/Alfresco/alfresco.sh stop "$2"'
+    RETVAL=$?
+}
+
+
+case "$1" in
+    start)
+        start "$@"
+        ;;
+    stop)
+        stop "$@"
+        ;;
+    restart)
+        stop "$@"
+        start "$@"
+        ;;
+    *)
+        su alfresco -c '/opt/Alfresco/alfresco.sh "$@"'
+        RETVAL=$?
+esac
+exit $RETVAL
