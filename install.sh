@@ -40,6 +40,7 @@ BASE_TEMP_DIR="/tmp"
 ALF_TEMP_DIR="$BASE_TEMP_DIR/alfresco-temp"
 ALF_WAR_PKG="alfresco-war.zip"
 CATALINA_BASE=/opt/alfresco/tomcat
+ALF_RM_VER="2.0.0-111"
 
 memsize=`cat /proc/meminfo | grep MemTotal | awk {'print $2'}`
 if [ $memsize -lt 4106527 ]; then
@@ -64,11 +65,8 @@ alf_install_share=1
 alf_install_vti=1
 
 # Whether DOD modules will be installed
-# FIXME - is DOD required?! Not available in v4 it would seem
-alf_install_dod=0
-
-# Whether to install the Records Management modules
-alf_install_rm=1
+# DOD is the old name for the Records Management module
+alf_install_dod=1
 
 # Whether to enable IMAP
 alf_enable_imap=1
@@ -181,13 +179,13 @@ case "$alf_version_suffix" in
 	echo "alf_version_suffix is a 4"
     ALF_DL_URL="$alf_base_url/alfresco-$alf_edition$alf_version_suffix.zip"
     ALF_VTI_MODULE_URL="$alf_base_url/alfresco-$alf_edition-spp$alf_version_suffix.zip"
-    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-$alf_edition-dod5015$alf_version_suffix.zip"
+    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-rm-$ALF_RM_VER.zip"
     ;;
   *-3.4*)
 	echo "alf_version_suffix is a 3.4"
     ALF_DL_URL="$alf_base_url/alfresco-$alf_edition$alf_version_suffix.zip"
     ALF_VTI_MODULE_URL="$alf_base_url/alfresco-$alf_edition-spp$alf_version_suffix.zip"
-    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-$alf_edition-dod5015$alf_version_suffix.zip"
+    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-rm-$ALF_RM_VER.zip"
     ;;
   *)
 	echo "alf_version_suffix is unknown"
@@ -195,8 +193,8 @@ case "$alf_version_suffix" in
     ALF_MMT_URL="$alf_base_url/alfresco-mmt$alf_version_suffix.jar"
     ALF_VTI_MODULE_URL="$alf_base_url/vti-module.amp"
     # DOD files now have version number in the file name for 3.3e
-    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-dod5015$alf_version_suffix.amp"
-    ALF_DOD_SHARE_MODULE_URL="$alf_base_url/alfresco-dod5015-share$alf_version_suffix.amp"
+    ALF_DOD_MODULE_URL="$alf_base_url/alfresco-rm-$ALF_RM_VER.zip"
+    ALF_DOD_SHARE_MODULE_URL="$alf_base_url/alfresco-rm-$ALF_RM_VER.zip"
 esac
 
 # Cache for Alfresco Network credentials
@@ -751,7 +749,7 @@ fi
 
 # Install DOD modules
 if [ "$alf_install_dod" == "1" ]; then
-  echo "Installing DOD modules"
+  echo "Installing RM modules"
   listdod="$( java -jar /opt/alfresco/bin/alfresco-mmt.jar list $CATALINA_BASE/webapps/alfresco.war | grep org_alfresco_module_dod5015 )"
   if [ -z "$listdod" -a -n "$ALF_DOD_MODULE_URL" ]; then
     case "$ALF_DOD_MODULE_URL" in
@@ -761,9 +759,9 @@ if [ "$alf_install_dod" == "1" ]; then
         rm alfresco-dod5015.amp
       ;;
       *.zip)
-        dl_package "$ALF_DOD_MODULE_URL" alfresco-dod5015.zip
-        unzip -q alfresco-dod5015.zip "*.amp"
-        install_amp $CATALINA_BASE/webapps/alfresco.war alfresco-$alf_edition-dod5015$alf_version_suffix.amp
+        dl_package "$ALF_DOD_MODULE_URL" alfresco-rm-$ALF_RM_VER.zip
+        unzip -q alfresco-rm-$ALF_RM_VER.zip "*.amp"
+        install_amp $CATALINA_BASE/webapps/alfresco.war alfresco-rm-$ALF_RM_VER.amp
       ;;
     esac
   fi
@@ -776,14 +774,14 @@ if [ "$alf_install_dod" == "1" ]; then
         rm alfresco-dod5015-share.amp
       ;;
       *.zip)
-        if [ ! -f alfresco-dod5015.zip ]; then dl_package "$ALF_DOD_MODULE_URL" alfresco-dod5015.zip; fi
-        if [ ! -f alfresco-$alf_edition-dod5015-share$alf_version_suffix.amp ]; then unzip -q alfresco-dod5015.zip "*.amp"; fi
-        install_amp $CATALINA_BASE/webapps/share.war alfresco-$alf_edition-dod5015-share$alf_version_suffix.amp
-        rm alfresco-$alf_edition-dod5015-share$alf_version_suffix.amp
+        if [ ! -f alfresco-rm-$ALF_RM_VER.zip ]; then dl_package "$ALF_DOD_MODULE_URL" alfresco-rm-$ALF_RM_VER.zip; fi
+        if [ ! -f alfresco-rm-share-$ALF_RM_VER.amp ]; then unzip -q alfresco-rm-$ALF_RM_VER.zip "*.amp"; fi
+        install_amp $CATALINA_BASE/webapps/share.war alfresco-rm-share-$ALF_RM_VER.amp
+        rm alfresco-rm-share-$ALF_RM_VER.amp
       ;;
     esac
   fi
-  if [ -f alfresco-dod5015.zip ]; then rm alfresco-dod5015.zip; fi
+  if [ -f alfresco-rm-$ALF_RM_VER.zip ]; then rm alfresco-rm-$ALF_RM_VER.zip; fi
 fi
 
 # Remove web-app folders to force deployment of new apps
