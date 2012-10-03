@@ -446,7 +446,6 @@ fi
 
 echo "Checking for ImageMagick"
 if [ ! `which convert` ]; then
-	echo "You need to install ImageMagick!"
 	zypper install -y "$alf_base_url/$libmagickwand_rpm" "$alf_base_url/$libmagick_rpm" "$alf_base_url/$imagemagick_rpm"
 fi
 
@@ -559,7 +558,7 @@ set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authent
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
 
 ## If there's privileged ports going to be used, get ready to forward them
-if [ "$alf_enable_ftp" == "1" ] || [ "$alf_enable_imap" == "1" ] || [ "$alf_enable_cifs" == "1" ] 
+if [ "$alf_enable_ftp" == "1" ] || [ "$alf_enable_imap" == "1" ] || [ "$alf_enable_cifs" == "1" ] ; then
   sysctl -w net.ipv6.conf.all.forwarding=1
   sysctl -w net.ipv4.conf.all.forwarding=1
   iptables -P INPUT ACCEPT
@@ -752,6 +751,7 @@ if [ "$alf_install_dod" == "1" ]; then
   echo "Installing RM modules"
   listdod="$( java -jar /opt/alfresco/bin/alfresco-mmt.jar list $CATALINA_BASE/webapps/alfresco.war | grep org_alfresco_module_dod5015 )"
   if [ -z "$listdod" -a -n "$ALF_DOD_MODULE_URL" ]; then
+    echo "Installing Alfresco RM module"
     case "$ALF_DOD_MODULE_URL" in
       *.amp)
         dl_package "$ALF_DOD_MODULE_URL" alfresco-dod5015.amp
@@ -767,6 +767,7 @@ if [ "$alf_install_dod" == "1" ]; then
   fi
   listdodshare="$( java -jar /opt/alfresco/bin/alfresco-mmt.jar list $CATALINA_BASE/webapps/share.war | grep org_alfresco_module_dod5015_share )"
   if [ -z "$listdodshare" -a "$alf_install_share" == "1" ]; then
+    echo "Installing Share RM module"
     case "$ALF_DOD_MODULE_URL" in
       *.amp)
         dl_package "$ALF_DOD_SHARE_MODULE_URL" alfresco-dod5015-share.amp
