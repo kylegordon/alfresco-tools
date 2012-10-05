@@ -711,7 +711,7 @@ set_property "$f" "ldap.synchronization.userLastNameAttributeName" "sn"
 set_property "$f" "ldap.synchronization.userEmailAttributeName" "mail"
 set_property "$f" "ldap.synchronization.userOrganizationalIdAttributeName" "o"
 set_property "$f" "ldap.synchronization.defaultHomeFolderProvider" "userHomesHomeFolderProvider"
-set_property "$f" "ldap.synchronization.groupIdAttributeName" "uid"
+set_property "$f" "ldap.synchronization.groupIdAttributeName" "cn"
 set_property "$f" "ldap.synchronization.userTelephoneNumberAttributeName" "telephoneNumber"
 
 
