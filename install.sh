@@ -570,6 +570,19 @@ fi
 f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 
 # Edit alfresco-global.properties
+
+set_property "$f" "alfresco.context" "alfresco"
+#alfresco.host=${localname}
+set_property "$f" "alfresco.host" "ecms.nes.scot.nhs.uk"
+set_property "$f" "alfresco.port" "8080"
+set_property "$f" "alfresco.protocol" "http"
+
+set_property "$f" "share.context" "share"
+#share.host=${localname}
+set_property "$f" "share.host" "ecms.nes.scot.nhs.uk"
+set_property "$f" "share.port" "8080"
+set_property "$f" "share.protocol" "http"
+
 # Index recovery mode
 set_property "$f" "index.recovery.mode" "AUTO"
 #set_property" $f" "hibernate.default_schema" "NES_ALFRESCO"
