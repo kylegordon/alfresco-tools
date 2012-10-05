@@ -678,6 +678,9 @@ set_property "$f" "mail.smtp.auth" "false"
 # Authentication chain
 set_property "$f" "authentication.chain" "alfrescoNtlm1:alfrescoNtlm,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
 
+# Sync settings
+set_property "$f" "synchronization.syncWhenMissingPeopleLogIn" "true"
+
 #LDAP Settings
 set_property "$f" "ldap.authentication.active" "true"
 set_property "$f" "ldap.authentication.allowGuestLogin" "false"
