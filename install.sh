@@ -713,6 +713,11 @@ set_property "$f" "ldap.synchronization.userOrganizationalIdAttributeName" "o"
 set_property "$f" "ldap.synchronization.defaultHomeFolderProvider" "userHomesHomeFolderProvider"
 set_property "$f" "ldap.synchronization.groupIdAttributeName" "cn"
 set_property "$f" "ldap.synchronization.userTelephoneNumberAttributeName" "telephoneNumber"
+set_property "$f" "ldap.synchronization.userFaxNumberAttributeName" "facsimileTelephoneNumber"
+set_property "$f" "ldap.synchronization.userPostCodeAttributeName" "postalCode"
+set_property "$f" "ldap.synchronization.userTitleAttributeName" "title"
+set_property "$f" "ldap.synchronization.userLocationAttributeName" "l"
+
 
 
 # Don't think this is needed
