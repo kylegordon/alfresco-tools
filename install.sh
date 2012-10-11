@@ -762,8 +762,12 @@ if [ "$alf_install_vti" == "1" ]; then
         rm alfresco-$alf_edition-spp$alf_version_suffix.amp vti-module.zip
       ;;
     esac
-    set_property "$f" "vti.alfresco.alfrescoHostWithPort" "http://localhost"
-    set_property "$f" "vti.share.shareHostWithPort" "http://localhost"
+    set_property "$f" "vti.server.port" "7070"
+    #set_property "$f" "vti.server.external.host" "${localname}"
+    set_property "$f" "vti.server.external.host" "ecms.nes.scot.nhs.uk"
+    set_property "$f" "vti.server.external.port" "${vti.server.port}"
+    #set_property "$f" "vti.alfresco.alfrescoHostWithPort" "http://localhost"
+    #set_property "$f" "vti.share.shareHostWithPort" "http://localhost"
   fi
 fi
 
