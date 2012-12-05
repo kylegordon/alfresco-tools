@@ -9,7 +9,6 @@
 #
 
     # User under which tomcat will run
-    #JAVA_HOME=/usr/java/default
     ALF_HOME=/opt/alfresco/
     ALF_SCRIPT=$ALF_HOME/alfresco.sh
 
@@ -19,7 +18,6 @@
     start() {
         # Start Tomcat in normal mode
         SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
-        #export JAVA_HOME=$JAVA_HOME
         if [ $SHUTDOWN_PORT -ne 0 ]; then
             echo "Alfresco already started"
         else
@@ -39,7 +37,6 @@
 
     stop() {
         SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
-        # export JAVA_HOME=$JAVA_HOME
         if [ $SHUTDOWN_PORT -eq 0 ]; then
             echo "Alfresco already stopped"
         else
