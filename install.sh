@@ -39,6 +39,7 @@ TOMCAT_TAR="$TOMCAT_VER.tar.gz"
 BASE_TEMP_DIR="/tmp"
 ALF_TEMP_DIR="$BASE_TEMP_DIR/alfresco-temp"
 ALF_WAR_PKG="alfresco-war.zip"
+ALFRESCO_BASE="/opt/alfresco/"
 CATALINA_BASE=/opt/alfresco/tomcat
 ALF_RM_VER="2.0.0-111"
 
@@ -556,6 +557,7 @@ dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/sha
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm001.nes.scot.nhs.uk:389"
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm002.nes.scot.nhs.uk:389"
 set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
+chown -R alfresco.alfresco $CATALINA_BASE/shared/classes/alfresco/extension/subsystems
 
 ## If there's privileged ports going to be used, get ready to forward them
 if [ "$alf_enable_ftp" == "1" ] || [ "$alf_enable_imap" == "1" ] || [ "$alf_enable_cifs" == "1" ] ; then
