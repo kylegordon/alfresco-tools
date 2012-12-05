@@ -10,7 +10,6 @@
 
     # User under which tomcat will run
     ALF_HOME=/opt/alfresco/
-    ALF_SCRIPT=$ALF_HOME/alfresco.sh
 
     RETVAL=0
 
@@ -22,7 +21,6 @@
             echo "Alfresco already started"
         else
             echo "Starting alfresco..."
-            #$ALF_SCRIPT start
             $ALF_HOME/tomcat/bin/startup.sh
             SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
             while [ $SHUTDOWN_PORT -eq 0 ]; do
@@ -41,7 +39,6 @@
             echo "Alfresco already stopped"
         else
             echo "Stopping alfresco..."
-            #$ALF_SCRIPT stop
 	    $ALF_HOME/tomcat/bin/shutdown.sh
             SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
             RETVAL=$?
