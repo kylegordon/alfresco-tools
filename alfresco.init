@@ -1,39 +1,84 @@
-#!/bin/sh
+#!/bin/bash
 #
-# chkconfig: 2345 80 30 
-# description: Alfresco Enterprise
+# alfresco      Startup script for Alfresco
+#
+# chkconfig: 345 96 14
+# description: Starts up the Alfresco ECM engine
+# processname: alfresco
+# pidfile: $ALF_HOME/alfresco.pid
 #
 
-RETVAL=0
+    # User under which tomcat will run
+    #JAVA_HOME=/usr/java/default
+    ALF_HOME=/opt/alfresco/
+    ALF_SCRIPT=$ALF_HOME/alfresco.sh
 
-start () {
-    su alfresco -c '/opt/Alfresco/alfresco.sh start "$2"'
-    RETVAL=$?
-    if [ -d "/var/lock/subsys" ] && [ `id -u` = 0 ] && [ $RETVAL -eq 0 ] ; then
-        touch /var/lock/subsys/alfresco
-    fi
+    RETVAL=0
 
-}
+    # start, debug, stop, and status functions
+    start() {
+        # Start Tomcat in normal mode
+        SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+        #export JAVA_HOME=$JAVA_HOME
+        if [ $SHUTDOWN_PORT -ne 0 ]; then
+            echo "Alfresco already started"
+        else
+            echo "Starting alfresco..."
+            #$ALF_SCRIPT start
+            $ALF_HOME/tomcat/bin/startup.sh
+            SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+            while [ $SHUTDOWN_PORT -eq 0 ]; do
+                sleep 1
+                SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+            done
+            RETVAL=$?
+            echo "Alfresco started"
+            [ $RETVAL=0 ] && touch /var/lock/subsys/alfresco
+        fi
+    }
 
-stop () {
-    su alfresco -c '/opt/Alfresco/alfresco.sh stop "$2"'
-    RETVAL=$?
-}
+    stop() {
+        SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+        # export JAVA_HOME=$JAVA_HOME
+        if [ $SHUTDOWN_PORT -eq 0 ]; then
+            echo "Alfresco already stopped"
+        else
+            echo "Stopping alfresco..."
+            #$ALF_SCRIPT stop
+	    $ALF_HOME/tomcat/bin/shutdown.sh
+            SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+            RETVAL=$?
+            echo "Alfresco stopped"
+            [ $RETVAL=0 ] && rm -f /var/lock/subsys/alfresco $ALF_HOME/alfresco.pid
+        fi
+    }
 
+    status() {
+        SHUTDOWN_PORT=`netstat -vatn|grep LISTEN|grep 8005|wc -l`
+        if [ $SHUTDOWN_PORT -eq 0 ]; then
+            echo "Alfresco stopped"
+        else
+            echo "Alfresco running"
+        fi
+    }
 
-case "$1" in
-    start)
-        start "$@"
-        ;;
-    stop)
-        stop "$@"
-        ;;
-    restart)
-        stop "$@"
-        start "$@"
-        ;;
-    *)
-        su alfresco -c '/opt/Alfresco/alfresco.sh "$@"'
-        RETVAL=$?
-esac
-exit $RETVAL
+    case "$1" in
+      start)
+            start
+            ;;
+      stop)
+            stop
+            ;;
+      restart)
+            stop
+            start
+            ;;
+      status)
+            status
+            ;;
+      *)
+            echo "Usage: $0 {start|stop|restart|status}"
+            exit 1
+    esac
+
+    exit $RETVAL
