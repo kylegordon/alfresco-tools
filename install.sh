@@ -767,7 +767,7 @@ if [ "$alf_install_vti" == "1" ]; then
     set_property "$f" "vti.server.port" "7070"
     #set_property "$f" "vti.server.external.host" "${localname}"
     set_property "$f" "vti.server.external.host" "ecms.nes.scot.nhs.uk"
-    set_property "$f" "vti.server.external.port" "${vti.server.port}"
+    set_property "$f" "vti.server.external.port" "7070"
     #set_property "$f" "vti.alfresco.alfrescoHostWithPort" "http://localhost"
     #set_property "$f" "vti.share.shareHostWithPort" "http://localhost"
   fi
