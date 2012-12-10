@@ -8,6 +8,16 @@
 # pidfile: $ALF_HOME/alfresco.pid
 #
 
+### BEGIN INIT INFO
+# Provides:		alfresco
+# Required-Start: 	$named $network $local_fs $time
+# Required-Stop: 	$named $network $local_fs $time
+# Default-Start:	3 5
+# Default-Stop:		0 1 2 6
+# Short-Description: 	Alfresco ECMS
+# Description:		Alfresco Electronic Content Management System.
+### END INIT INFO
+
     # User under which tomcat will run
     ALF_HOME=/opt/alfresco/
 
