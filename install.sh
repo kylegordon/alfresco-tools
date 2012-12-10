@@ -682,6 +682,7 @@ set_property "$f" "authentication.chain" "alfrescoNtlm1:alfrescoNtlm,nsedm001:ld
 
 # Sync settings
 set_property "$f" "synchronization.syncWhenMissingPeopleLogIn" "true"
+set_property "$f" "synchronization.syncOnStartup" "false"
 
 #LDAP Settings
 set_property "$f" "ldap.authentication.active" "true"
