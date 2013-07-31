@@ -23,7 +23,7 @@
 # Begin configuration
 
 # The base URL to download from, and the version of Alfresco in use
-alf_base_url="http://nssmt001.nes.scot.nhs.uk/instserv/software/alfresco/"
+alf_base_url="http://deployment_server.nes.scot.nhs.uk/instserv/software/alfresco/"
 alf_version_suffix="-4.0.2.9"
 alf_edition="enterprise"
 
@@ -548,15 +548,15 @@ chmod +x /etc/init.d/alfresco
 chkconfig alfresco on
 
 echo "Configuring Alfresco"
-mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001
-mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002
-mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003
-dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/nsedm001-context.xml
-dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/nsedm002-context.xml
-dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/nsedm003-context.xml
-set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm001/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm001.nes.scot.nhs.uk:389"
-set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm002/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm002.nes.scot.nhs.uk:389"
-set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/nsedm003/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://nsedm003.nes.scot.nhs.uk:389"
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server01
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server02
+mkdir -p $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server03
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server01/server01-context.xml
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server02/server02-context.xml
+dl_package $alf_base_url/subsystem-auth-ldap/ldap-context.xml $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server03/server03-context.xml
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server01/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://server01.nes.scot.nhs.uk:389"
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server02/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://server02.nes.scot.nhs.uk:389"
+set_property $CATALINA_BASE/shared/classes/alfresco/extension/subsystems/Authentication/ldap/server03/ldap-authentication.properties "ldap.authentication.java.naming.provider.url" "ldap://server03.nes.scot.nhs.uk:389"
 chown -R alfresco.alfresco $CATALINA_BASE/shared/classes/alfresco/extension/subsystems
 
 ## If there's privileged ports going to be used, get ready to forward them
@@ -575,7 +575,7 @@ f=$CATALINA_BASE/shared/classes/alfresco-global.properties
 
 set_property "$f" "alfresco.context" "alfresco"
 #alfresco.host=${localname}
-set_property "$f" "alfresco.host" "ecms.nes.scot.nhs.uk"
+set_property "$f" "alfresco.host" "alfresco_server.nes.scot.nhs.uk"
 set_property "$f" "alfresco.port" "8080"
 set_property "$f" "alfresco.protocol" "http"
 
@@ -612,7 +612,7 @@ set_property "$f" "db.password" "alfresco"
 #FIXME - Only required for Oracle
 #set_property "$f" "db.pool.validate.query" "SELECT 1 FROM DUAL"
 #set_property "$f" "db.driver" "oracle.jdbc.OracleDriver"
-#set_property "$f" "db.url" "jdbc:oracle:thin:@chalf002.nes.scot.nhs.uk:1521:alf"
+#set_property "$f" "db.url" "jdbc:oracle:thin:@dbserver.nes.scot.nhs.uk:1521:alf"
 
 
 # Remote Management Interface Ports
@@ -670,7 +670,7 @@ set_property "$f" "nfs.enabled" "false"
 
 # Set mail settings
 set_property "$f" "notification.email.siteinvite" "true"
-set_property "$f" "mail.host" "smtp.nes.scot.nhs.uk"
+set_property "$f" "mail.host" "mailserver.nes.scot.nhs.uk"
 set_property "$f" "mail.port" "25"
 set_property "$f" "mail.protocol" "smtp"
 set_property "$f" "mail.encoding" "UTF-8"
@@ -678,7 +678,7 @@ set_property "$f" "mail.from.default" "ecms@nes.scot.nhs.uk"
 set_property "$f" "mail.smtp.auth" "false"
 
 # Authentication chain
-set_property "$f" "authentication.chain" "alfrescoNtlm1:alfrescoNtlm,nsedm001:ldap,nsedm002:ldap,nsedm003:ldap"
+set_property "$f" "authentication.chain" "alfrescoNtlm1:alfrescoNtlm,server01:ldap,server02:ldap,server03:ldap"
 
 # Sync settings
 set_property "$f" "synchronization.syncWhenMissingPeopleLogIn" "true"
@@ -689,7 +689,7 @@ set_property "$f" "ldap.authentication.active" "true"
 set_property "$f" "ldap.authentication.allowGuestLogin" "false"
 set_property "$f" "ldap.authentication.userNameFormat" ""
 set_property "$f" "ldap.authentication.java.naming.factory.initial" "com.sun.jndi.ldap.LdapCtxFactory"
-#set_property "$f" "ldap.authentication.java.naming.provider.url" "ldap://ldap1.nes.scot.nhs.uk:389"
+#set_property "$f" "ldap.authentication.java.naming.provider.url" "ldap://ldapserver.nes.scot.nhs.uk:389"
 set_property "$f" "ldap.authentication.java.naming.security.authentication" "simple"
 set_property "$f" "ldap.authentication.escapeCommasInBind" "false"
 set_property "$f" "ldap.authentication.escapeCommasInUid" "false"
@@ -767,7 +767,7 @@ if [ "$alf_install_vti" == "1" ]; then
     esac
     set_property "$f" "vti.server.port" "7070"
     #set_property "$f" "vti.server.external.host" "${localname}"
-    set_property "$f" "vti.server.external.host" "ecms.nes.scot.nhs.uk"
+    set_property "$f" "vti.server.external.host" "alfresco_server.nes.scot.nhs.uk"
     set_property "$f" "vti.server.external.port" "7070"
     #set_property "$f" "vti.alfresco.alfrescoHostWithPort" "http://localhost"
     #set_property "$f" "vti.share.shareHostWithPort" "http://localhost"
